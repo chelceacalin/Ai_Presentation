@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Architecture: Deep Dive</title>
+
+    <!-- Link către fișierul CSS extern -->
+    <link rel="stylesheet" href="style.css" />
+
+    <!-- Librării pentru generarea ZIP-ului -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  </head>
+  <body>
+    <!-- BUTOANE TOP RIGHT -->
+    <div class="top-nav">
+      <!-- Butonul care descarcă tot proiectul ca ZIP -->
+      <a
+        href="https://www.linkedin.com/in/chelceacalin/"
+        target="_blank"
+        class="nav-btn"
+      >
+        Contact Me
+      </a>
+    </div>
+
+    <div class="progress-container">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div class="carousel-container">
+      <!-- 1. PRESENTATION PAGE -->
+      <div class="slide active">
+        <div
+          style="
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+          "
+        >
+          <h1>Modern AI Architecture</h1>
+          <h3 style="font-size: 1.8rem; color: #94a3b8">
+            From Embeddings to Chatbots
+          </h3>
+          <div style="margin-top: 50px; font-size: 1.5rem">
+            Created by <strong>Chelcea Calin</strong>
+          </div>
+        </div>
+        <div class="slide-number">1 / 25</div>
+      </div>
+
+      <!-- 2. CONTENT PAGE -->
+      <div class="slide">
+        <h2>Agenda</h2>
+        <ul style="font-size: 1.5rem; line-height: 2">
+          <li>What are Embeddings?</li>
+          <li>What are Tokens?</li>
+          <li>Embeddings vs. Tokens (The Context Gap)</li>
+          <li>Common Misconceptions (The Parrot/Carrot Fun Fact)</li>
+          <li>Vector Databases</li>
+          <li>Vector DB vs. Traditional SQL</li>
+          <li>The Problem with LLMs</li>
+          <li>RAG: The Solution</li>
+          <li>RAG Architecture</li>
+          <li>Live Demo & Chatbot</li>
+        </ul>
+        <div class="slide-number">2 / 25</div>
+      </div>
+
+      <!-- 3. WHAT ARE EMBEDDINGS -->
+      <div class="slide">
+        <h2>What are Embeddings?</h2>
+        <p>Embeddings are the fundamental building blocks of modern NLP.</p>
+        <ul>
+          <li>
+            <strong>Definition:</strong> Numerical representations for words,
+            letters, symbols, or images.
+          </li>
+          <li>
+            <strong>Structure:</strong> They are typically
+            <strong>continuous</strong> (can take any real number),
+            <strong>dense vectors</strong> (likely not zero), and serve as a
+            compressed notation to represent data.
+          </li>
+          <li>
+            <strong>The Goal:</strong> To capture
+            <strong>semantic meaning</strong>.
+          </li>
+        </ul>
+        <div class="code-block">
+          # Conceptual Representation cat = [0.2, -0.4, 0.9, ...] dog = [0.2,
+          -0.3, 0.8, ...]
+        </div>
+
+        <img
+          src="./assets/cat_dog_lion.jpg"
+          alt="Cat vs Dog Vector Space"
+          class="slide-image"
+        />
+
+        <div class="slide-number">3 / 25</div>
+      </div>
+
+      <!-- 4. WHAT ARE TOKENS -->
+      <div class="slide">
+        <h2>What are Tokens?</h2>
+        <p>
+          Before we get embeddings, we need Tokens. A computer cannot "read"
+          text; it can only process numbers.
+        </p>
+        <ul>
+          <li>
+            <strong>Definition:</strong> The process of breaking down text into
+            smaller units (tokens) and assigning them a static numeric ID.
+          </li>
+          <li>
+            <strong>Words vs. Tokens:</strong> A token is not always a word.
+            <ul>
+              <li>Common words ("Apple") = 1 Token.</li>
+              <li>
+                Complex words ("Unfriendliness") = Multiple Tokens ("Un",
+                "friend", "li", "ness").
+              </li>
+            </ul>
+          </li>
+        </ul>
+
+        <img
+          src="./assets/token_diagram.svg"
+          alt="Tokenization Diagram"
+          class="slide-image"
+        />
+
+        <div class="slide-number">4 / 25</div>
+      </div>
+
+      <!-- 5. EMBEDDINGS VS TOKENS -->
+      <div class="slide">
+        <h2>Embeddings vs. Tokens</h2>
+        <p>
+          <strong>The Context Problem:</strong> If "Bank" is always token #405,
+          how does the model know the difference between a river bank and a
+          financial bank?
+        </p>
+
+        <h3>The Process:</h3>
+        <ol>
+          <li>
+            Each word gets converted into a <strong>token</strong> (Static ID).
+          </li>
+          <li>
+            Tokens get converted into initial <strong>embeddings</strong>.
+          </li>
+          <li>
+            <strong>The Magic:</strong> Through a mechanism called
+            <strong>Self-Attention</strong>, the model looks at the whole
+            proposition.
+          </li>
+          <li>
+            It <strong>updates the embedding</strong> to reflect its meaning
+            <em>in that specific phrase</em>.
+          </li>
+        </ol>
+
+        <div class="note-box">
+          <strong>Key Takeaway:</strong> Tokens are just dictionary lookups.
+          Embeddings are dynamic, context-aware representations.
+        </div>
+        <div class="slide-number">5 / 25</div>
+      </div>
+
+      <!-- 6. MISCONCEPTIONS -->
+      <div class="slide">
+        <h2>Misconceptions about Embeddings</h2>
+        <p>
+          We often think embeddings capture "truth," but they actually capture
+          <strong>usage patterns</strong>.
+        </p>
+
+        <h3>Fun Fact: Parrot vs. Carrot</h3>
+        <p>
+          In vector space, words like <strong>parrot</strong> and
+          <strong>carrot</strong> are often found quite close together.
+        </p>
+        <ul>
+          <li>
+            <strong>Why?</strong> Embedding models are trained on vast amounts
+            of data, including poems, songs, and nursery rhymes.
+          </li>
+          <li>
+            <strong>The "Rhyme" Effect:</strong> Because they rhyme, they appear
+            in similar sentence structures (positionally similar).
+          </li>
+        </ul>
+
+        <img
+          src="./assets/parrot_carrot.svg"
+          alt="Parrot vs Carrot Rhyme Effect"
+          class="slide-image"
+        />
+
+        <div class="slide-number">6 / 25</div>
+      </div>
+
+      <!-- 7. VECTOR DATABASE -->
+      <div class="slide">
+        <h2>Vector Databases</h2>
+        <p>
+          Where do we store millions of these vector lists? Standard databases
+          aren't built for this.
+        </p>
+        <ul>
+          <li>
+            <strong>Definition:</strong> Specialized databases designed to
+            store, index, and query high-dimensional vectors.
+          </li>
+          <li>
+            <strong>How they work:</strong> They use indexing algorithms to
+            create a map of the data.
+          </li>
+          <li>
+            <strong>Scalability:</strong> FAISS (In-memory, Fast) vs ChromaDB
+            (Storage, Filtering).
+          </li>
+        </ul>
+
+        <div class="note-box">
+          <strong>How HNSW Works (The Algorithm):</strong><br />
+          Think of it like a highway system.
+          <br />• <strong>Top Layers:</strong> Express highways with few exits
+          (nodes). <br />• <strong>Bottom Layers:</strong> Local roads for
+          fine-grained searching. <br /><br />
+          <a
+            href="https://www.youtube.com/watch?v=77QH0Y2PYKg"
+            target="_blank"
+            style="color: var(--accent); font-weight: bold"
+            >▶ Watch Video Explanation (HNSW)</a
+          >
+        </div>
+        <div class="slide-number">7 / 25</div>
+      </div>
+
+      <!-- 8. VECTOR DB VS TRADITIONAL -->
+      <div class="slide">
+        <h2>Vector DB vs. Traditional DB</h2>
+        <p>
+          Why are they faster than just storing embeddings in a string column in
+          SQL?
+        </p>
+        <p>
+          In a traditional DB, finding "similar" items would require comparing
+          your query to <em>every single row</em> (Full Table Scan).
+        </p>
+
+        <img
+          src="./assets/linear_hnsw_scan.svg"
+          alt="Linear Scan vs HNSW Index"
+          class="slide-image"
+        />
+
+        <table
+          style="
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+          "
+        >
+          <tr style="border-bottom: 1px solid var(--accent)">
+            <th style="text-align: left; padding: 10px">Traditional SQL</th>
+            <th style="text-align: left; padding: 10px">Vector DB</th>
+          </tr>
+          <tr>
+            <td style="padding: 10px">Exact keyword matching</td>
+            <td style="padding: 10px">Semantic similarity</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px">Scans rows (O(n) complexity)</td>
+            <td style="padding: 10px">
+              Traverses Index Graph (O(log n) complexity)
+            </td>
+          </tr>
+        </table>
+        <div class="slide-number">8 / 25</div>
+      </div>
+
+      <!-- 9. THE PROBLEM WITH LLMs -->
+      <div class="slide">
+        <h2>The Problem with LLMs</h2>
+        <p>
+          Large Language Models like GPT-4 are powerful, but they have three
+          major weaknesses when deployed in business:
+        </p>
+
+        <ul>
+          <li>
+            <strong>1. The Knowledge Cut-off:</strong> They are frozen in time.
+          </li>
+          <li>
+            <strong>2. No Private Knowledge:</strong> They don't have access to
+            your internal database.
+          </li>
+          <li>
+            <strong>3. Hallucinations:</strong> They often confidently invent
+            facts when unsure.
+          </li>
+        </ul>
+
+        <div
+          class="note-box"
+          style="
+            border-left-color: #f87171;
+            background: rgba(248, 113, 113, 0.1);
+          "
+        >
+          <strong>User:</strong> "What is my mother's name?"<br />
+          <strong>ChatGPT:</strong> "I don't know who you are."
+        </div>
+        <div class="slide-number">9 / 25</div>
+      </div>
+
+      <!-- 10. RAG: THE SOLUTION -->
+      <div class="slide">
+        <h2>RAG: Retrieval-Augmented Generation</h2>
+        <p>
+          To fix these problems, we don't need a bigger brain; we need a
+          <strong>better library</strong>.
+        </p>
+
+        <h3>The Concept</h3>
+        <p>
+          <strong>Without RAG (Closed Book Exam):</strong> The student (LLM)
+          must answer purely from memory.
+        </p>
+        <p>
+          <strong>With RAG (Open Book Exam):</strong> The student (LLM) is
+          allowed to go to the library, find the relevant textbook page
+          (Retrieval), and use that specific information.
+        </p>
+
+        <div class="note-box">
+          RAG = Search Engine Accuracy + LLM Creativity.
+        </div>
+        <div class="slide-number">10 / 25</div>
+      </div>
+
+      <!-- 11. RAG ARCHITECTURE -->
+      <div class="slide">
+        <h2>How RAG Works (The Pipeline)</h2>
+        <p>How do we technically implement this "Open Book" strategy?</p>
+
+        <h3>Step 1: Indexing (Preparation)</h3>
+        <ul>
+          <li>Break documents into small chunks.</li>
+          <li>Convert chunks to vectors and store in Vector DB.</li>
+        </ul>
+
+        <h3>Step 2: Retrieval (The Search)</h3>
+        <ul>
+          <li>User asks: "Tell me about cat speed."</li>
+          <li>System searches Vector DB for chunks about "cat speed".</li>
+        </ul>
+
+        <h3>Step 3: Generation (The Answer)</h3>
+        <ul>
+          <li>We paste the retrieved text into the prompt context.</li>
+          <li>LLM generates a factual response.</li>
+        </ul>
+        <div class="slide-number">11 / 25</div>
+      </div>
+
+      <!-- 12. GOOGLE COLAB LINK -->
+      <div class="slide">
+        <h2>2D Representation Demo</h2>
+        <p>
+          We use dimensionality reduction (PCA/t-SNE) to visualize these complex
+          vectors on a 2D screen.
+        </p>
+
+        <div
+          class="placeholder-zone"
+          style="
+            background: rgba(56, 189, 248, 0.1);
+            border-color: var(--accent);
+          "
+        >
+          <h3>
+            <a
+              href="https://colab.research.google.com/drive/1a_VRR7bu2uNR4CmPngBcqGKgj8uavMET"
+              target="_blank"
+              >🔗 CLICK</a
+            >
+          </h3>
+        </div>
+        <div class="slide-number">12 / 25</div>
+      </div>
+
+      <!-- 13. MOVING TO CHATBOT -->
+      <div class="slide">
+        <div
+          style="
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+          "
+        >
+          <h1>Phase 2: The Chatbot</h1>
+          <p>Now that we understand the architecture...</p>
+          <h3>Let's see it in action.</h3>
+        </div>
+        <div class="slide-number">13 / 25</div>
+      </div>
+
+      <!-- 14-23. BLANK PAGES (Extras) -->
+      <div class="slide">
+        <h2>Extra Content 1</h2>
+        <div class="placeholder-zone">Your content goes here...</div>
+        <div class="slide-number">14 / 25</div>
+      </div>
+      <div class="slide">
+        <h2>Extra Content 2</h2>
+        <div class="placeholder-zone">Your content goes here...</div>
+        <div class="slide-number">15 / 25</div>
+      </div>
+      <div class="slide">
+        <h2>Extra Content 3</h2>
+        <div class="placeholder-zone">Your content goes here...</div>
+        <div class="slide-number">16 / 25</div>
+      </div>
+      <div class="slide">
+        <h2>Extra Content 4</h2>
+        <div class="placeholder-zone">Your content goes here...</div>
+        <div class="slide-number">17 / 25</div>
+      </div>
+      <div class="slide">
+        <h2>Extra Content 5</h2>
+        <div class="placeholder-zone">Your content goes here...</div>
+        <div class="slide-number">18 / 25</div>
+      </div>
+      <div class="slide">
+        <h2>Extra Content 6</h2>
+        <div class="placeholder-zone">Your content goes here...</div>
+        <div class="slide-number">19 / 25</div>
+      </div>
+      <div class="slide">
+        <h2>Extra Content 7</h2>
+        <div class="placeholder-zone">Your content goes here...</div>
+        <div class="slide-number">20 / 25</div>
+      </div>
+      <div class="slide">
+        <h2>Extra Content 8</h2>
+        <div class="placeholder-zone">Your content goes here...</div>
+        <div class="slide-number">21 / 25</div>
+      </div>
+      <div class="slide">
+        <h2>Extra Content 9</h2>
+        <div class="placeholder-zone">Your content goes here...</div>
+        <div class="slide-number">22 / 25</div>
+      </div>
+      <div class="slide">
+        <h2>Extra Content 10</h2>
+        <div class="placeholder-zone">Your content goes here...</div>
+        <div class="slide-number">23 / 25</div>
+      </div>
+
+      <!-- CLOSING PAGE -->
+      <div class="slide">
+        <div
+          style="
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+          "
+        >
+          <h1>Q & A</h1>
+          <h3>Thank you for listening.</h3>
+        </div>
+        <div class="slide-number">24 / 25</div>
+      </div>
+
+      <!-- END PAGE -->
+      <div class="slide">
+        <div
+          style="
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+          "
+        >
+          <h2>End of Presentation</h2>
+        </div>
+        <div class="slide-number">25 / 25</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="control-btn" onclick="moveSlide(-1)">&#8592; Prev</button>
+      <button class="control-btn" onclick="moveSlide(1)">Next &#8594;</button>
+    </div>
+
+    <script src="scripts.js"></script>
+  </body>
+</html>

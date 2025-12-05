@@ -1,0 +1,96 @@
+<svg width="800" height="400" xmlns="http://www.w3.org/2000/svg">
+  <!-- 1. Background -->
+  <rect width="100%" height="100%" fill="#1e293b" />
+  
+  <!-- 2. Grid Pattern -->
+  <defs>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#334155" stroke-width="1"/>
+    </pattern>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#38bdf8" />
+    </marker>
+    <marker id="arrow-red" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#f87171" />
+    </marker>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#grid)" />
+
+  <!-- 3. Titles -->
+  <text x="200" y="40" font-family="Segoe UI, sans-serif" font-size="20" fill="#f87171" font-weight="bold" text-anchor="middle">TRADITIONAL (Linear Scan)</text>
+  <text x="600" y="40" font-family="Segoe UI, sans-serif" font-size="20" fill="#38bdf8" font-weight="bold" text-anchor="middle">VECTOR INDEX (HNSW)</text>
+
+  <!-- =========================================
+       LEFT SIDE: LINEAR SCAN (The "Slow" Way)
+       ========================================= -->
+  <g transform="translate(50, 80)">
+    <!-- The Database List -->
+    <rect x="100" y="0" width="100" height="280" rx="5" fill="#0f172a" stroke="#475569" stroke-width="2"/>
+    
+    <!-- Rows -->
+    <circle cx="150" cy="30" r="5" fill="#475569" />
+    <circle cx="150" cy="70" r="5" fill="#475569" />
+    <circle cx="150" cy="110" r="5" fill="#475569" />
+    <circle cx="150" cy="150" r="5" fill="#475569" />
+    <circle cx="150" cy="190" r="5" fill="#475569" />
+    <circle cx="150" cy="230" r="5" fill="#38bdf8" /> <!-- Target -->
+    
+    <!-- The Query Scan Path (Red Arrow Loop) -->
+    <path d="M 50 30 L 130 30" stroke="#f87171" stroke-width="2" marker-end="url(#arrow-red)"/>
+    <path d="M 50 70 L 130 70" stroke="#f87171" stroke-width="2" marker-end="url(#arrow-red)"/>
+    <path d="M 50 110 L 130 110" stroke="#f87171" stroke-width="2" marker-end="url(#arrow-red)"/>
+    <path d="M 50 150 L 130 150" stroke="#f87171" stroke-width="2" marker-end="url(#arrow-red)"/>
+    
+    <!-- "Query" Label -->
+    <text x="20" y="100" font-family="monospace" font-size="14" fill="#f87171" transform="rotate(-90 20,100)">CHECK EVERY ROW...</text>
+    
+    <!-- Speed Label -->
+    <text x="150" y="310" font-family="Segoe UI, sans-serif" font-size="16" fill="#f87171" font-weight="bold" text-anchor="middle">O(n) - Slow</text>
+  </g>
+
+  <!-- Divider Line -->
+  <line x1="400" y1="60" x2="400" y2="360" stroke="#334155" stroke-width="2" stroke-dasharray="5,5"/>
+
+  <!-- =========================================
+       RIGHT SIDE: HNSW (The "Fast" Way)
+       ========================================= -->
+  <g transform="translate(450, 80)">
+    
+    <!-- Layer 0 (Top - Coarse) -->
+    <rect x="0" y="0" width="300" height="280" fill="none" />
+    
+    <!-- Graph Nodes -->
+    <!-- Entry Point -->
+    <circle cx="150" cy="20" r="8" fill="#38bdf8" stroke="#fff" stroke-width="2"/>
+    <text x="150" y="15" font-family="monospace" font-size="10" fill="#fff" text-anchor="middle" dy="-5">Entry</text>
+
+    <!-- Mid Layer Nodes -->
+    <circle cx="80" cy="100" r="6" fill="#1e293b" stroke="#475569" stroke-width="2"/>
+    <circle cx="220" cy="100" r="6" fill="#38bdf8" stroke="#fff" stroke-width="2"/> <!-- Path node -->
+
+    <!-- Bottom Layer Nodes (Dense) -->
+    <circle cx="40" cy="200" r="4" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+    <circle cx="100" cy="200" r="4" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+    <circle cx="180" cy="200" r="4" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+    <circle cx="240" cy="230" r="8" fill="#4ade80" stroke="#fff" stroke-width="2"/> <!-- Target -->
+    <circle cx="280" cy="200" r="4" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+
+    <!-- Connections (The Graph) -->
+    <!-- Jump 1: Entry to Mid-Right -->
+    <path d="M 150 28 L 220 92" stroke="#38bdf8" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrow)"/>
+    
+    <!-- Jump 2: Mid-Right to Target -->
+    <path d="M 220 108 L 240 220" stroke="#38bdf8" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrow)"/>
+
+    <!-- Layers Visualization (Subtle Boxes) -->
+    <rect x="100" y="10" width="100" height="20" rx="10" fill="none" stroke="#475569" stroke-dasharray="2,2" opacity="0.5"/>
+    <text x="210" y="25" font-size="10" fill="#64748b">Layer 2</text>
+    
+    <rect x="60" y="90" width="180" height="20" rx="10" fill="none" stroke="#475569" stroke-dasharray="2,2" opacity="0.5"/>
+    <text x="250" y="105" font-size="10" fill="#64748b">Layer 1</text>
+    
+    <!-- Speed Label -->
+    <text x="150" y="310" font-family="Segoe UI, sans-serif" font-size="16" fill="#4ade80" font-weight="bold" text-anchor="middle">O(log n) - Fast</text>
+  </g>
+
+</svg>
