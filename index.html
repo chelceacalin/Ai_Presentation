@@ -441,7 +441,7 @@
         <div class="slide-number">13 / 25</div>
       </div>
 
-      <!-- 14 MOVING TO CHATBOT -->
+      <!-- 14. PHASE 2 INTRO -->
       <div class="slide">
         <div
           style="
@@ -454,10 +454,9 @@
           "
         >
           <h1>Phase 2: The Chatbot</h1>
-          <p>Now that we understand the architecture...</p>
-          <h3>Let's do a deep dive into the system logic.</h3>
+          <p>Deep dive into system logic, storage strategies, and routing.</p>
         </div>
-        <div class="slide-number">14 / 25</div>
+        <div class="slide-number">14 / 26</div>
       </div>
 
       <!-- 15. STORAGE STRATEGY -->
@@ -494,12 +493,138 @@
           <strong>Tech Stack:</strong> Python, Flask, SentenceTransformers,
           FAISS.
         </div>
-        <div class="slide-number">15 / 25</div>
+        <div class="slide-number">15 / 26</div>
       </div>
 
-      <!-- 16. INTENT ROUTER -->
+      <!-- 16. NEW SLIDE: LIVE LOGIC TRACE (EXAMPLE) -->
       <div class="slide">
-        <h2>2. Intelligent Router (The Intent)</h2>
+        <h2>2. Live Logic Trace</h2>
+        <p>How the system "reads" the file structure before answering.</p>
+
+        <div
+          style="
+            display: flex;
+            gap: 20px;
+            text-align: left;
+            font-size: 0.9rem;
+            margin-top: 20px;
+          "
+        >
+          <!-- Mocked JSON Data based on uploaded image -->
+          <div
+            class="code-block"
+            style="
+              flex: 1;
+              color: #a5b3ce;
+              border: 1px solid #334155;
+              margin: 0;
+              overflow-y: auto;
+              max-height: 300px;
+            "
+          >
+            <pre style="margin: 0">
+{
+  "unique_id": "4f257...db",
+  "filename": "Risk_Summary_Global_Q3.xlsx",
+  "sheet_name": "All Risks - Regions",
+  "columns": [
+    "0: Risk Group",
+    "1: Net Total (USD)",
+    "2: Gross Total (USD)"
+  ],
+  "sheet_summary": "Financial risk summary focusing on market exposure. 
+   Identifies significant risk categories...",
+  "is_complex": true,
+  "minio_url": "s3://secure-vault/risk-reports/2025/summary.xlsx"
+}</pre
+            >
+          </div>
+
+          <!-- The Decision Logic -->
+          <div
+            style="
+              flex: 1;
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+            "
+          >
+            <div
+              class="diagram-box"
+              style="
+                margin: 5px 0;
+                border-left: 4px solid #3b82f6;
+                padding: 10px;
+              "
+            >
+              <strong>Step 1: Input Analysis</strong><br />
+              User asks: <em>"What is the Net Total risk?"</em>
+            </div>
+            <div
+              class="diagram-box"
+              style="
+                margin: 5px 0;
+                border-left: 4px solid #f59e0b;
+                padding: 10px;
+              "
+            >
+              <strong>Step 2: Vector Match</strong><br />
+              System matches "Net Total" column in JSON to user query.
+            </div>
+            <div
+              class="diagram-box"
+              style="
+                margin: 5px 0;
+                border-left: 4px solid #10b981;
+                padding: 10px;
+              "
+            >
+              <strong>Step 3: Routing</strong><br />
+              Intent: <span style="color: #10b981">CONTENT_RETRIEVAL</span
+              ><br />
+              <em>(System pulls file from MinIO URL)</em>
+            </div>
+          </div>
+        </div>
+        <div class="slide-number">16 / 26</div>
+      </div>
+
+      <!-- 17. DATA HYDRATION (MOVED FROM 18) -->
+      <div class="slide">
+        <h2>3. Data Hydration & LLM Handoff</h2>
+        <p>
+          We retrieve based on a similarity search on the file
+          <strong>SUMMARY</strong>, not just keywords.
+        </p>
+
+        <ol style="font-size: 1.1rem; line-height: 1.4">
+          <li>
+            <strong>Search:</strong> Find top matches in FAISS based on summary
+            vectors.
+          </li>
+          <li>
+            <strong>Fetch:</strong> Use the stored URL to pull the binary from
+            MinIO.
+          </li>
+          <li>
+            <strong>Parse:</strong> Clean the Excel/PDF (remove empty
+            rows/cols).
+          </li>
+          <li>
+            <strong>Format:</strong> Convert the clean data into
+            <strong>Markdown</strong>.
+          </li>
+          <li>
+            <strong>Handoff:</strong> Pass the Markdown + User Query + Expanded
+            Metadata to the LLM for final answer generation.
+          </li>
+        </ol>
+        <div class="slide-number">17 / 26</div>
+      </div>
+
+      <!-- 18. INTENT ROUTER (MOVED FROM 16) -->
+      <div class="slide">
+        <h2>4. Intelligent Router (The Intent)</h2>
         <p>Every user message is categorized into one of 5 specific intents:</p>
 
         <div
@@ -525,12 +650,12 @@
             query.
           </p>
         </div>
-        <div class="slide-number">16 / 25</div>
+        <div class="slide-number">18 / 26</div>
       </div>
 
-      <!-- 17. MEMORY & REWRITING -->
+      <!-- 19. MEMORY & REWRITING (MOVED FROM 17) -->
       <div class="slide">
-        <h2>3. Memory & Query Rewriting</h2>
+        <h2>5. Memory & Query Rewriting</h2>
         <p>
           We maintain a dedicated memory store for each user session. This
           bridge allows the system to understand context, pronouns, and intent
@@ -575,45 +700,12 @@
           Database and SQL engine never have to guess. They always receive
           complete, standalone instructions.
         </p>
-        <div class="slide-number">17 / 25</div>
+        <div class="slide-number">19 / 26</div>
       </div>
 
-      <!-- 18. DATA HYDRATION -->
+      <!-- 20. INDEX MANAGER (MOVED FROM 19) -->
       <div class="slide">
-        <h2>4. Data Hydration & LLM Handoff</h2>
-        <p>
-          We retrieve based on a similarity search on the file
-          <strong>SUMMARY</strong>, not just keywords.
-        </p>
-
-        <ol style="font-size: 1.1rem; line-height: 1.4">
-          <li>
-            <strong>Search:</strong> Find top matches in FAISS based on summary
-            vectors.
-          </li>
-          <li>
-            <strong>Fetch:</strong> Use the stored URL to pull the binary from
-            MinIO.
-          </li>
-          <li>
-            <strong>Parse:</strong> Clean the Excel/PDF (remove empty
-            rows/cols).
-          </li>
-          <li>
-            <strong>Format:</strong> Convert the clean data into
-            <strong>Markdown</strong>.
-          </li>
-          <li>
-            <strong>Handoff:</strong> Pass the Markdown + User Query + Expanded
-            Metadata to the LLM for final answer generation.
-          </li>
-        </ol>
-        <div class="slide-number">18 / 25</div>
-      </div>
-
-      <!-- 19. INDEX MANAGER -->
-      <div class="slide">
-        <h2>5. Index Manager & Scheduler</h2>
+        <h2>6. Index Manager & Scheduler</h2>
         <p>Ensuring consistency between MinIO and FAISS.</p>
 
         <div
@@ -636,12 +728,12 @@
             we re-process. Otherwise, we skip to save resources.
           </li>
         </ul>
-        <div class="slide-number">19 / 25</div>
+        <div class="slide-number">20 / 26</div>
       </div>
 
-      <!-- 20. RESPONSE TRANSPARENCY -->
+      <!-- 21. RESPONSE TRANSPARENCY (MOVED FROM 20) -->
       <div class="slide">
-        <h2>6. Response Transparency</h2>
+        <h2>7. Response Transparency</h2>
         <p>The response object contains critical metadata for user trust.</p>
 
         <div
@@ -660,12 +752,12 @@
             ⏱️ <strong>Time:</strong> 1.2s
           </p>
         </div>
-        <div class="slide-number">20 / 25</div>
+        <div class="slide-number">21 / 26</div>
       </div>
 
-      <!-- 21. SECURITY -->
+      <!-- 22. SECURITY (MOVED FROM 21) -->
       <div class="slide">
-        <h2>7. Security Guardrails</h2>
+        <h2>8. Security Guardrails</h2>
         <p>Paranoid security measures for code execution.</p>
 
         <ul style="font-size: 1.2rem">
@@ -688,12 +780,12 @@
             </ul>
           </li>
         </ul>
-        <div class="slide-number">21 / 25</div>
+        <div class="slide-number">22 / 26</div>
       </div>
 
-      <!-- 22. BENEFITS -->
+      <!-- 23. BENEFITS (MOVED FROM 22) -->
       <div class="slide">
-        <h2>8. System Benefits</h2>
+        <h2>9. System Benefits</h2>
         <p>Why this architecture works for Enterprise:</p>
 
         <div
@@ -745,10 +837,10 @@
             rewritten and code executed.
           </div>
         </div>
-        <div class="slide-number">22 / 25</div>
+        <div class="slide-number">23 / 26</div>
       </div>
 
-      <!-- CLOSING PAGE -->
+      <!-- 24. CLOSING PAGE -->
       <div class="slide">
         <div
           style="
@@ -763,10 +855,10 @@
           <h1>Q & A</h1>
           <h3>Thank you for listening.</h3>
         </div>
-        <div class="slide-number">23 / 25</div>
+        <div class="slide-number">24 / 26</div>
       </div>
 
-      <!-- END PAGE -->
+      <!-- 25. END PAGE -->
       <div class="slide">
         <div
           style="
@@ -780,10 +872,10 @@
         >
           <h2>End of Presentation</h2>
         </div>
-        <div class="slide-number">24 / 25</div>
+        <div class="slide-number">25 / 26</div>
       </div>
 
-      <!-- EMPTY BUFFER SLIDE TO FIX COUNT -->
+      <!-- 26. EMPTY BUFFER SLIDE -->
       <div class="slide">
         <div
           style="
@@ -795,15 +887,15 @@
         >
           <h2>Thank You</h2>
         </div>
-        <div class="slide-number">25 / 25</div>
+        <div class="slide-number">26 / 26</div>
       </div>
     </div>
 
+    <!-- CONTROLS -->
     <div class="controls">
       <button class="control-btn" onclick="moveSlide(-1)">&#8592; Prev</button>
       <button class="control-btn" onclick="moveSlide(1)">Next &#8594;</button>
     </div>
-
     <script src="scripts.js"></script>
   </body>
 </html>
