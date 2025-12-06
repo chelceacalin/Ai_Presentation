@@ -87,7 +87,7 @@
             <strong>semantic meaning</strong>.
           </li>
         </ul>
-        <div class="code-block">
+        <div class="code-block" id="representation-example">
           # Conceptual Representation cat = [0.2, -0.4, 0.9, ...] dog = [0.2,
           -0.3, 0.8, ...]
         </div>
@@ -502,6 +502,7 @@
         <p>How the system "reads" the file structure before answering.</p>
 
         <div
+          id="live-logic-trace"
           style="
             display: flex;
             gap: 20px;
@@ -577,6 +578,7 @@
                 margin: 5px 0;
                 border-left: 4px solid #10b981;
                 padding: 10px;
+                max-height: 400px;
               "
             >
               <strong>Step 3: Routing</strong><br />
@@ -662,7 +664,11 @@
           shifts just like a human would.
         </p>
 
-        <div class="code-block" style="font-size: 0.85rem; text-align: left">
+        <div
+          class="code-block"
+          style="font-size: 0.85rem; text-align: left"
+          id="memory-rewriting-examples"
+        >
           <!-- Example 1: SQL Context -->
           <div style="margin-bottom: 10px">
             <strong>Scenario 1: SQL Parameter Update</strong><br />
