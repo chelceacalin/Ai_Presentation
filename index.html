@@ -5,17 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AI Architecture: Deep Dive</title>
 
-    <!-- Link către fișierul CSS extern -->
+    <!-- External CSS -->
     <link rel="stylesheet" href="style.css" />
 
-    <!-- Librării pentru generarea ZIP-ului -->
+    <!-- Libraries for ZIP generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
   </head>
   <body>
-    <!-- BUTOANE TOP RIGHT -->
+    <!-- TOP RIGHT BUTTONS -->
     <div class="top-nav">
-      <!-- Butonul care descarcă tot proiectul ca ZIP -->
       <a
         href="https://www.linkedin.com/in/chelceacalin/"
         target="_blank"
@@ -53,7 +52,7 @@
         <div class="slide-number">1 / 25</div>
       </div>
 
-      <!-- 2. CONTENT PAGE -->
+      <!-- 2. AGENDA -->
       <div class="slide">
         <h2>Agenda</h2>
         <ul style="font-size: 1.5rem; line-height: 2">
@@ -66,7 +65,7 @@
           <li>The Problem with LLMs</li>
           <li>RAG: The Solution</li>
           <li>RAG Architecture</li>
-          <li>Live Demo & Chatbot</li>
+          <li>Live Demo & Chatbot Deep Dive</li>
         </ul>
         <div class="slide-number">2 / 25</div>
       </div>
@@ -399,6 +398,7 @@
         </div>
         <div class="slide-number">12 / 25</div>
       </div>
+
       <!-- 13. Rag Challenges -->
       <div class="slide">
         <h2>RAG Challenges in Production</h2>
@@ -458,57 +458,297 @@
         >
           <h1>Phase 2: The Chatbot</h1>
           <p>Now that we understand the architecture...</p>
-          <h3>Let's see it in action.</h3>
+          <h3>Let's do a deep dive into the system logic.</h3>
         </div>
         <div class="slide-number">14 / 25</div>
       </div>
 
-      <!-- 14-23. BLANK PAGES (Extras) -->
-
+      <!-- 15. STORAGE STRATEGY -->
       <div class="slide">
-        <h2>Extra Content 2</h2>
-        <div class="placeholder-zone">Your content goes here...</div>
+        <h2>1. Storage & Retrieval Strategy</h2>
+        <p>We use a hybrid approach to balance speed and data integrity.</p>
+
+        <ul style="font-size: 1.1rem; text-align: left">
+          <li>
+            <strong>Vector Store (FAISS):</strong> We use
+            <strong>all-MiniLM-L6-v2</strong> for embeddings.
+          </li>
+          <li>
+            <strong>Fast Retrieval Maps:</strong> To ensure O(1) access times,
+            we maintain two in-memory hashmaps:
+            <ul>
+              <li><code>ID_to_Index</code></li>
+              <li><code>Index_to_ID</code></li>
+            </ul>
+          </li>
+          <li>
+            <strong>The ID Hash:</strong> A deterministic signature: <br /><code
+              >hash(folder_name + filename + sheet_name)</code
+            >
+          </li>
+          <li>
+            <strong>Data Source:</strong> We <strong>do not</strong> store the
+            actual file content in FAISS. We store metadata pointers. The source
+            of truth is always MinIO.
+          </li>
+        </ul>
+
+        <div class="note-box" style="font-size: 0.9rem; margin-top: 10px">
+          <strong>Tech Stack:</strong> Python, Flask, SentenceTransformers,
+          FAISS.
+        </div>
         <div class="slide-number">15 / 25</div>
       </div>
+
+      <!-- 16. INTENT ROUTER -->
       <div class="slide">
-        <h2>Extra Content 3</h2>
-        <div class="placeholder-zone">Your content goes here...</div>
+        <h2>2. Intelligent Router (The Intent)</h2>
+        <p>Every user message is categorized into one of 5 specific intents:</p>
+
+        <div
+          class="diagram-box"
+          style="text-align: left; font-size: 1rem; padding: 15px"
+        >
+          <p>
+            🔵 <strong>Content:</strong> Excel parsing & Vector Search (RAG).
+          </p>
+          <p>
+            🟡 <strong>MinIO:</strong> File operations. Has 2 sub-intents:
+            <br />&nbsp;&nbsp;&nbsp;• <em>Predefined:</em> Uses standard
+            functions (List/Check). <br />&nbsp;&nbsp;&nbsp;•
+            <em>Dynamic:</em> LLM generates code based on available functions.
+          </p>
+          <p>🟢 <strong>SQL:</strong> Database query generation.</p>
+          <p>
+            🟣 <strong>History:</strong> Exit early. Answer purely from
+            conversation memory.
+          </p>
+          <p>
+            🔴 <strong>Breach_Attempt:</strong> Exit early. User asked an unsafe
+            query.
+          </p>
+        </div>
         <div class="slide-number">16 / 25</div>
       </div>
+
+      <!-- 17. MEMORY & REWRITING -->
       <div class="slide">
-        <h2>Extra Content 4</h2>
-        <div class="placeholder-zone">Your content goes here...</div>
+        <h2>3. Memory & Query Rewriting</h2>
+        <p>
+          We maintain a dedicated memory store for each user session. This
+          bridge allows the system to understand context, pronouns, and intent
+          shifts just like a human would.
+        </p>
+
+        <div class="code-block" style="font-size: 0.85rem; text-align: left">
+          <!-- Example 1: SQL Context -->
+          <div style="margin-bottom: 10px">
+            <strong>Scenario 1: SQL Parameter Update</strong><br />
+            <span style="color: #94a3b8">User:</span> "Show me the latest 5
+            reports." ➔
+            <span style="color: #10b981">System executes SQL (LIMIT 5)</span
+            ><br />
+            <span style="color: #94a3b8">User:</span> "Actually, I want the top
+            10."<br />
+            <span style="color: #f59e0b">Internal Logic:</span> The LLM sees the
+            previous SQL, detects the intent to change the quantity, modifies
+            <code>LIMIT 5</code> to <code>LIMIT 10</code>, and re-executes.
+          </div>
+
+          <hr style="border-color: #555; margin: 10px 0" />
+
+          <!-- Example 2: Semantic Context -->
+          <div>
+            <strong>Scenario 2: Semantic Disambiguation</strong><br />
+            <span style="color: #94a3b8">User:</span> "What is the exposure for
+            the Q3 Risk Report?"<br />
+            <span style="color: #94a3b8">User:</span> "Who approved
+            <em>it</em>?"<br />
+            <span style="color: #f59e0b">Rewritten Query:</span> "Who approved
+            the Q3 Risk Report?"<br />
+            <em
+              >(This rewritten query is sent to FAISS, ensuring we find the
+              approver for the correct report.)</em
+            >
+          </div>
+        </div>
+
+        <p style="font-size: 1rem; margin-top: 10px">
+          <strong>The Benefit:</strong> This decoupling means our Vector
+          Database and SQL engine never have to guess. They always receive
+          complete, standalone instructions.
+        </p>
         <div class="slide-number">17 / 25</div>
       </div>
+
+      <!-- 18. DATA HYDRATION -->
       <div class="slide">
-        <h2>Extra Content 5</h2>
-        <div class="placeholder-zone">Your content goes here...</div>
+        <h2>4. Data Hydration & LLM Handoff</h2>
+        <p>
+          We retrieve based on a similarity search on the file
+          <strong>SUMMARY</strong>, not just keywords.
+        </p>
+
+        <ol style="font-size: 1.1rem; line-height: 1.4">
+          <li>
+            <strong>Search:</strong> Find top matches in FAISS based on summary
+            vectors.
+          </li>
+          <li>
+            <strong>Fetch:</strong> Use the stored URL to pull the binary from
+            MinIO.
+          </li>
+          <li>
+            <strong>Parse:</strong> Clean the Excel/PDF (remove empty
+            rows/cols).
+          </li>
+          <li>
+            <strong>Format:</strong> Convert the clean data into
+            <strong>Markdown</strong>.
+          </li>
+          <li>
+            <strong>Handoff:</strong> Pass the Markdown + User Query + Expanded
+            Metadata to the LLM for final answer generation.
+          </li>
+        </ol>
         <div class="slide-number">18 / 25</div>
       </div>
+
+      <!-- 19. INDEX MANAGER -->
       <div class="slide">
-        <h2>Extra Content 6</h2>
-        <div class="placeholder-zone">Your content goes here...</div>
+        <h2>5. Index Manager & Scheduler</h2>
+        <p>Ensuring consistency between MinIO and FAISS.</p>
+
+        <div
+          class="code-block"
+          style="font-size: 1rem; border-left: 4px solid var(--accent)"
+        >
+          ID = hash(folder + "_" + file + "_" + sheet)
+        </div>
+
+        <ul style="font-size: 1.1rem">
+          <li>
+            <strong>Scheduler:</strong> Runs every 30 mins to scan the bucket.
+          </li>
+          <li>
+            <strong>Validation:</strong> Checks <code>last_modified</code> date
+            against the index.
+          </li>
+          <li>
+            <strong>Update Logic:</strong> If the date differs OR the ID is new,
+            we re-process. Otherwise, we skip to save resources.
+          </li>
+        </ul>
         <div class="slide-number">19 / 25</div>
       </div>
+
+      <!-- 20. RESPONSE TRANSPARENCY -->
       <div class="slide">
-        <h2>Extra Content 7</h2>
-        <div class="placeholder-zone">Your content goes here...</div>
+        <h2>6. Response Transparency</h2>
+        <p>The response object contains critical metadata for user trust.</p>
+
+        <div
+          class="diagram-box"
+          style="text-align: left; padding: 15px; font-size: 0.95rem"
+        >
+          <p><strong>Answer:</strong> "The total risk is $45M..."</p>
+          <hr style="opacity: 0.3; margin: 10px 0" />
+          <p style="color: #94a3b8">
+            📂 <strong>Sources:</strong> Risk_Report_Q3.xlsx [Match Probability:
+            92%]<br />
+            📝 <strong>User Query:</strong> "Total risk?"<br />
+            🧠 <strong>Refined Query:</strong> "Calculate total net risk for Q3
+            reports"<br />
+            💻 <strong>Code:</strong> [View Snippet]<br />
+            ⏱️ <strong>Time:</strong> 1.2s
+          </p>
+        </div>
         <div class="slide-number">20 / 25</div>
       </div>
+
+      <!-- 21. SECURITY -->
       <div class="slide">
-        <h2>Extra Content 8</h2>
-        <div class="placeholder-zone">Your content goes here...</div>
+        <h2>7. Security Guardrails</h2>
+        <p>Paranoid security measures for code execution.</p>
+
+        <ul style="font-size: 1.2rem">
+          <li>
+            <strong>Namespace Execution:</strong> Python runs in a restricted
+            scope. No access to globals/OS.
+          </li>
+          <li>
+            <strong>Restricted Python Built-ins:</strong> `os.system`,
+            `subprocess`, `open(write)` are strictly blocked.
+          </li>
+          <li>
+            <strong>SQL Restrictions:</strong>
+            <ul>
+              <li>User has <code>SELECT</code> only permissions.</li>
+              <li>
+                Keywords like <code>DROP</code>, <code>TRUNCATE</code>,
+                <code>ALTER</code> are blocked at the prompt injection level.
+              </li>
+            </ul>
+          </li>
+        </ul>
         <div class="slide-number">21 / 25</div>
       </div>
+
+      <!-- 22. BENEFITS -->
       <div class="slide">
-        <h2>Extra Content 9</h2>
-        <div class="placeholder-zone">Your content goes here...</div>
+        <h2>8. System Benefits</h2>
+        <p>Why this architecture works for Enterprise:</p>
+
+        <div
+          style="
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 0.9rem;
+          "
+        >
+          <div
+            style="
+              background: rgba(255, 255, 255, 0.05);
+              padding: 10px;
+              border-left: 3px solid #10b981;
+            "
+          >
+            <strong>Flexibility:</strong><br />LLM Factory allows swapping
+            models (GPT-4, Claude) seamlessly.
+          </div>
+          <div
+            style="
+              background: rgba(255, 255, 255, 0.05);
+              padding: 10px;
+              border-left: 3px solid #3b82f6;
+            "
+          >
+            <strong>Accuracy:</strong><br />Scheduler ensures we never answer
+            from stale files.
+          </div>
+          <div
+            style="
+              background: rgba(255, 255, 255, 0.05);
+              padding: 10px;
+              border-left: 3px solid #f59e0b;
+            "
+          >
+            <strong>Safety:</strong><br />Router blocks malicious queries before
+            DB access.
+          </div>
+          <div
+            style="
+              background: rgba(255, 255, 255, 0.05);
+              padding: 10px;
+              border-left: 3px solid #a855f7;
+            "
+          >
+            <strong>Auditability:</strong><br />Full transparency on queries
+            rewritten and code executed.
+          </div>
+        </div>
         <div class="slide-number">22 / 25</div>
-      </div>
-      <div class="slide">
-        <h2>Extra Content 10</h2>
-        <div class="placeholder-zone">Your content goes here...</div>
-        <div class="slide-number">23 / 25</div>
       </div>
 
       <!-- CLOSING PAGE -->
@@ -526,7 +766,7 @@
           <h1>Q & A</h1>
           <h3>Thank you for listening.</h3>
         </div>
-        <div class="slide-number">24 / 25</div>
+        <div class="slide-number">23 / 25</div>
       </div>
 
       <!-- END PAGE -->
@@ -542,6 +782,21 @@
           "
         >
           <h2>End of Presentation</h2>
+        </div>
+        <div class="slide-number">24 / 25</div>
+      </div>
+
+      <!-- EMPTY BUFFER SLIDE TO FIX COUNT -->
+      <div class="slide">
+        <div
+          style="
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+          "
+        >
+          <h2>Thank You</h2>
         </div>
         <div class="slide-number">25 / 25</div>
       </div>
