@@ -399,8 +399,52 @@
         </div>
         <div class="slide-number">12 / 25</div>
       </div>
+      <!-- 13. Rag Challenges -->
+      <div class="slide">
+        <h2>RAG Challenges in Production</h2>
+        <p>Building a prototype is easy. Production is hard.</p>
 
-      <!-- 13. MOVING TO CHATBOT -->
+        <ul style="font-size: 1.3rem; line-height: 1.6">
+          <li>
+            <strong>1. Handling Unstructured Data (ETL):</strong>
+            Garbage In, Garbage Out. Extracting clean text from PDFs, complex
+            tables, and messy HTML is 80% of the work.
+          </li>
+          <li>
+            <strong>2. Data Freshness (The Sync Problem):</strong>
+            If you update a SQL row, the Vector DB becomes "stale".
+            <br /><em>Solution:</em> <strong>Cron Jobs</strong> or CDC (Change
+            Data Capture) pipelines to re-embed data daily/hourly.
+          </li>
+          <li>
+            <strong>3. Query Routing:</strong>
+            Does the user need "Technical Support" or "Sales Info"? We need a
+            semantic router (Classifier) to pick the right index.
+          </li>
+          <li>
+            <strong>4. Memory & Context:</strong>
+            Balancing "Chat History" vs. "Retrieved Documents" within the token
+            limit.
+          </li>
+        </ul>
+
+        <div
+          class="note-box"
+          style="
+            border-left-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.1);
+          "
+        >
+          <strong>The "Lost in the Middle" Phenomenon:</strong><br />
+          LLMs tend to focus on the beginning and end of the context window. If
+          the answer is buried in the middle of 10 retrieved documents, the
+          model might miss it.
+        </div>
+
+        <div class="slide-number">13 / 25</div>
+      </div>
+
+      <!-- 14 MOVING TO CHATBOT -->
       <div class="slide">
         <div
           style="
@@ -416,15 +460,11 @@
           <p>Now that we understand the architecture...</p>
           <h3>Let's see it in action.</h3>
         </div>
-        <div class="slide-number">13 / 25</div>
+        <div class="slide-number">14 / 25</div>
       </div>
 
       <!-- 14-23. BLANK PAGES (Extras) -->
-      <div class="slide">
-        <h2>Extra Content 1</h2>
-        <div class="placeholder-zone">Your content goes here...</div>
-        <div class="slide-number">14 / 25</div>
-      </div>
+
       <div class="slide">
         <h2>Extra Content 2</h2>
         <div class="placeholder-zone">Your content goes here...</div>
