@@ -46,7 +46,7 @@
             Created by <strong>Chelcea Calin</strong>
           </div>
         </div>
-        <div class="slide-number">1 / 28</div>
+        <div class="slide-number">1  / 28</div>
       </div>
 
       <!-- 2. AGENDA -->
@@ -64,7 +64,7 @@
           <li>RAG Architecture</li>
           <li>Live Demo & Chatbot Deep Dive</li>
         </ul>
-        <div class="slide-number">2 / 28</div>
+        <div class="slide-number">2  / 28</div>
       </div>
 
       <!-- 3. WHAT ARE EMBEDDINGS -->
@@ -98,7 +98,7 @@
           class="slide-image"
         />
 
-        <div class="slide-number">3 / 28</div>
+        <div class="slide-number">3  / 28</div>
       </div>
 
       <!-- 4. WHAT ARE TOKENS -->
@@ -131,7 +131,7 @@
           class="slide-image"
         />
 
-        <div class="slide-number">4 / 28</div>
+        <div class="slide-number">4  / 28</div>
       </div>
 
       <!-- 5. EMBEDDINGS VS TOKENS -->
@@ -166,42 +166,50 @@
           <strong>Key Takeaway:</strong> Tokens are just dictionary lookups.
           Embeddings are dynamic, context-aware representations.
         </div>
-        <div class="slide-number">5 / 28</div>
+        <div class="slide-number">5  / 28</div>
       </div>
-
-      <!-- 6. MISCONCEPTIONS -->
       <div class="slide">
-        <h2>Misconceptions about Embeddings</h2>
+        <h2>🧠 Deep Dive: The Self-Attention Mechanism</h2>
+        <pre style="color: red;">Note: Skip - Guide to Sources </pre>
         <p>
-          We often think embeddings capture "truth," but they actually capture
-          <strong>usage patterns</strong>.
+          <strong>The Objective:</strong> To calculate a new <em>Context Vector</em> for each token by aggregating information from all other tokens based on relevance.
         </p>
-
-        <h3>Fun Fact: Parrot vs. Carrot</h3>
-        <p>
-          In vector space, words like <strong>parrot</strong> and
-          <strong>carrot</strong> are often found quite close together.
-        </p>
-        <ul>
+      
+        <hr>
+      
+        <div style="background-color: #2d2d2d; color: #f8f8f2; padding: 15px; border-radius: 6px; font-family: 'Courier New', monospace; font-size: 0.85em; margin: 15px 0; border-left: 5px solid #bd93f9;">
+          
+          <span style="color: #6272a4;">// 1. Linear Projections (Learnable Weights)</span><br>
+          <strong>Q, K, V</strong> = Embedding &times; (W<sub>q</sub>, W<sub>k</sub>, W<sub>v</sub>)<br><br>
+      
+          <span style="color: #6272a4;">// 2. Similarity Score (Dot Product)</span><br>
+          <strong>Raw_Score</strong> = DotProduct(Q, K<sup>T</sup>)<br><br>
+      
+          <span style="color: #6272a4;">// 3. Normalization (Probabilities)</span><br>
+          <strong>Attn_Weights</strong> = Softmax(Raw_Score / &radic;d<sub>k</sub>)<br><br>
+      
+          <span style="color: #6272a4;">// 4. Update Step (Weighted Sum)</span><br>
+          <strong>New_Embedding</strong> = &Sigma; (Attn_Weights &times; V)
+        </div>
+      
+        <h3>Technical Breakdown:</h3>
+        <ul style="font-size: 0.9em; line-height: 1.4;">
           <li>
-            <strong>Why?</strong> Embedding models are trained on vast amounts
-            of data, including poems, songs, and nursery rhymes.
+            <strong>Dot Product (Q&middot;K):</strong> Mathematically measures vector alignment. High alignment = High relevance between words.
           </li>
           <li>
-            <strong>The "Rhyme" Effect:</strong> Because they rhyme, they appear
-            in similar sentence structures (positionally similar).
+            <strong>Softmax:</strong> Normalizes scores into probabilities (0 to 1) so they sum to 100%.
+          </li>
+          <li>
+            <strong>Weighted Sum:</strong> The final vector is not a "replacement" but a <strong>blend</strong> of the <em>Values (V)</em> of all tokens, weighted by their importance.
           </li>
         </ul>
-
-        <img
-          src="./assets/parrot_carrot.svg"
-          alt="Parrot vs Carrot Rhyme Effect"
-          class="slide-image"
-        />
-
-        <div class="slide-number">6 / 28</div>
+        
+        <img src="assets/self_attention.jpg" alt="Self Attention picture">
+        <a href="https://newsletter.theaiedge.io/p/understanding-the-self-attention">Source & More info</a>
+      
+        <div class="slide-number">6  / 28</div>
       </div>
-
       <!-- 7. VECTOR DATABASE -->
       <div class="slide">
         <h2>Vector Databases</h2>
@@ -225,7 +233,7 @@
         </ul>
 
         <div class="note-box">
-          <strong>How HNSW Works (The Algorithm):</strong><br />
+          <strong>How HNSW Works (Hierarchical Navigable Small World):</strong><br />
           Think of it like a highway system.
           <br />• <strong>Top Layers:</strong> Express highways with few exits
           (nodes). <br />• <strong>Bottom Layers:</strong> Local roads for
@@ -237,7 +245,10 @@
             >▶ Watch Video Explanation (HNSW)</a
           >
         </div>
-        <div class="slide-number">7 / 28</div>
+
+        <p>Photo explanation: </p>
+        <img src="assets/hnsw.jpg" alt="Hierarchical Navigable Small World Algo Picture">
+        <div class="slide-number">7  / 28</div>
       </div>
 
       <!-- 8. VECTOR DB VS TRADITIONAL -->
@@ -282,14 +293,14 @@
             </td>
           </tr>
         </table>
-        <div class="slide-number">8 / 28</div>
+        <div class="slide-number">8  / 28</div>
       </div>
 
       <!-- 9. THE PROBLEM WITH LLMs -->
       <div class="slide">
         <h2>The Problem with LLMs</h2>
         <p>
-          Large Language Models like GPT-4 are powerful, but they have three
+          Large Language Models like GPT-4 are powerful, but they have a couple
           major weaknesses when deployed in business:
         </p>
 
@@ -305,6 +316,9 @@
             <strong>3. Hallucinations:</strong> They often confidently invent
             facts when unsure.
           </li>
+          <li>
+            <strong>4. Security:</strong> A public model should not know your private confidential data!
+          </li>
         </ul>
 
         <div
@@ -317,7 +331,7 @@
           <strong>User:</strong> "What is my mother's name?"<br />
           <strong>ChatGPT:</strong> "I don't know who you are."
         </div>
-        <div class="slide-number">9 / 28</div>
+        <div class="slide-number">9  / 28</div>
       </div>
 
       <!-- 10. RAG: THE SOLUTION -->
@@ -342,7 +356,7 @@
         <div class="note-box">
           RAG = Search Engine Accuracy + LLM Creativity.
         </div>
-        <div class="slide-number">10 / 28</div>
+        <div class="slide-number">10  / 28</div>
       </div>
 
       <!-- 11. RAG ARCHITECTURE -->
@@ -352,22 +366,28 @@
 
         <h3>Step 1: Indexing (Preparation)</h3>
         <ul>
-          <li>Break documents into small chunks.</li>
+          <li>Get the data required for the use case, clean it, parse it (hardest part of RAG)</li>
+          <li>Break documents into small chunks. (many ways to do that)</li>
           <li>Convert chunks to vectors and store in Vector DB.</li>
+          <img src="assets/text_to_vector.png" alt="Text to vector image">
         </ul>
 
         <h3>Step 2: Retrieval (The Search)</h3>
         <ul>
-          <li>User asks: "Tell me about cat speed."</li>
-          <li>System searches Vector DB for chunks about "cat speed".</li>
+          <li>User asks: "Tell me about topic X."</li>
+          <li>System receives question from user, converts it to EMBEDDING and</li>
+          <li>System searches VectorDB for documents relevant to the Embedded question</li>
         </ul>
 
         <h3>Step 3: Generation (The Answer)</h3>
         <ul>
-          <li>We paste the retrieved text into the prompt context.</li>
+          <li>We retrieve the documents from DB</li>
+          <li>And then append the text as context to the llm along with the user question</li>
           <li>LLM generates a factual response.</li>
         </ul>
-        <div class="slide-number">11 / 28</div>
+
+        <img src="assets/context_picture.png" alt="Context improved picture" style="max-height: 300px; max-width: 300px;">
+        <div class="slide-number">11  / 28</div>
       </div>
 
       <!-- 12. GOOGLE COLAB LINK -->
@@ -393,7 +413,7 @@
             >
           </h3>
         </div>
-        <div class="slide-number">12 / 28</div>
+        <div class="slide-number">12  / 28</div>
       </div>
 
       <!-- 13. Rag Challenges -->
@@ -423,6 +443,17 @@
             Balancing "Chat History" vs. "Retrieved Documents" within the token
             limit.
           </li>
+          <li>
+            <strong>5. Security:</strong>
+           Especially for more general RAG systems, we need to restrict an user to ask questions about topics he is restricted to seeing.
+          </li>
+          <li>
+            <strong>6. Cost:</strong>
+          Indexing a lot of documents, keeping a lot of memory, big prompts etc will add the cost quickly.
+          </li>
+          <li>
+            <strong>7. Speed:</strong>
+No one wants to wait 2 minutes for a query.          </li>
         </ul>
 
         <div
@@ -438,7 +469,7 @@
           model might miss it.
         </div>
 
-        <div class="slide-number">13 / 28</div>
+        <div class="slide-number">13  / 28</div>
       </div>
 
       <!-- 14. PHASE 2 INTRO -->
@@ -456,7 +487,7 @@
           <h1>Phase 2: The Chatbot</h1>
           <p>Deep dive into system logic, storage strategies, and routing.</p>
         </div>
-        <div class="slide-number">14 / 28</div>
+        <div class="slide-number">14  / 28</div>
       </div>
 
       <!-- 15. STORAGE STRATEGY -->
@@ -487,13 +518,16 @@
             actual file content in FAISS. We store metadata pointers. The source
             of truth is always MinIO.
           </li>
+          <li>
+           Periodic schedules that reindex data based on the hash
+          </li>
         </ul>
 
         <div class="note-box" style="font-size: 0.9rem; margin-top: 10px">
           <strong>Tech Stack:</strong> Python, Flask, SentenceTransformers,
           FAISS.
         </div>
-        <div class="slide-number">15 / 28</div>
+        <div class="slide-number">15  / 28</div>
       </div>
 
       <!-- 16. NEW SLIDE: LIVE LOGIC TRACE (EXAMPLE) -->
@@ -520,7 +554,7 @@
               border: 1px solid #334155;
               margin: 0;
               overflow-y: auto;
-              max-height: 300px;
+              min-height: 400px;
             "
           >
             <pre style="margin: 0">
@@ -536,7 +570,9 @@
   "sheet_summary": "Financial risk summary focusing on market exposure. 
    Identifies significant risk categories...",
   "is_complex": true,
-  "minio_url": "s3://secure-vault/risk-reports/2025/summary.xlsx"
+  "last_modified": "2025-12-20 12:00:30",
+  "isNewest": true,
+  "minio_url": "s3://secure-vault/risk-reports/2025-12-20/summary.xlsx"
 }</pre
             >
           </div>
@@ -588,7 +624,7 @@
             </div>
           </div>
         </div>
-        <div class="slide-number">16 / 28</div>
+        <div class="slide-number">16  / 28</div>
       </div>
 
       <!-- 17. DATA HYDRATION (MOVED FROM 18) -->
@@ -596,13 +632,12 @@
         <h2>3. Data Hydration & LLM Handoff</h2>
         <p>
           We retrieve based on a similarity search on the file
-          <strong>SUMMARY</strong>, not just keywords.
+          <strong>SUMMARY AND the other metadata such as columns</strong>, not just keywords.
         </p>
 
         <ol style="font-size: 1.1rem; line-height: 1.4">
           <li>
-            <strong>Search:</strong> Find top matches in FAISS based on summary
-            vectors.
+            <strong>Search:</strong> Find top matches in FAISS based on similarity.
           </li>
           <li>
             <strong>Fetch:</strong> Use the stored URL to pull the binary from
@@ -614,26 +649,31 @@
           </li>
           <li>
             <strong>Format:</strong> Convert the clean data into
-            <strong>Markdown</strong>.
+            <strong>Markdown</strong> ( very easy to understand for LLMs).
           </li>
           <li>
             <strong>Handoff:</strong> Pass the Markdown + User Query + Expanded
             Metadata to the LLM for final answer generation.
+            Expanded metadata: File Name, Folder Location, Accuracy Score etc - it will prevent false positives 
           </li>
         </ol>
-        <div class="slide-number">17 / 28</div>
+        <div class="slide-number">17  / 28</div>
       </div>
 
       <!-- 18. INTENT ROUTER (MOVED FROM 16) -->
       <div class="slide">
         <h2>4. Intelligent Router (The Intent)</h2>
-        <p>Every user message is categorized into one of 5 specific intents:</p>
-
+        <p>Every user message is categorized into one of 5 specific intents.
+        </p>
+        <pre> 
+              3 Functionalities: Content, MinIO, SQL
+              5 Possible outputs(currently):</pre>
+          <p>
         <div
           class="diagram-box"
           style="text-align: left; font-size: 1rem; padding: 15px"
         >
-          <p>
+       
             🔵 <strong>Content:</strong> Excel parsing & Vector Search (RAG).
           </p>
           <p>
@@ -652,7 +692,7 @@
             query.
           </p>
         </div>
-        <div class="slide-number">18 / 28</div>
+        <div class="slide-number">18  / 28</div>
       </div>
 
       <!-- 19. MEMORY & REWRITING (MOVED FROM 17) -->
@@ -672,27 +712,27 @@
           <!-- Example 1: SQL Context -->
           <div style="margin-bottom: 10px">
             <strong>Scenario 1: SQL Parameter Update</strong><br />
-            <span style="color: #94a3b8">User:</span> "Show me the latest 5
+            <span style="color: #94a3b8"  class="fb">User:</span> "Show me the latest 5
             reports." ➔
-            <span style="color: #10b981">System executes SQL (LIMIT 5)</span
+            <span style="color: #10b981"  class="fb">System executes SQL (LIMIT 5)</span
             ><br />
-            <span style="color: #94a3b8">User:</span> "Actually, I want the top
+            <span style="color: #94a3b8"  class="fb">User:</span> "Actually, I want the top
             10."<br />
-            <span style="color: #f59e0b">Internal Logic:</span> The LLM sees the
+            <span style="color: #f59e0b"  class="fb">Internal Logic:</span> The LLM sees the
             previous SQL, detects the intent to change the quantity, modifies
             <code>LIMIT 5</code> to <code>LIMIT 10</code>, and re-executes.
           </div>
-
+          <br>
           <hr style="border-color: #555; margin: 10px 0" />
-
+<br>
           <!-- Example 2: Semantic Context -->
           <div>
             <strong>Scenario 2: Semantic Disambiguation</strong><br />
-            <span style="color: #94a3b8">User:</span> "What is the exposure for
+            <span style="color: #94a3b8" class="fb">User:</span> "What is the exposure for
             the Q3 Risk Report?"<br />
-            <span style="color: #94a3b8">User:</span> "Who approved
+            <span style="color: #94a3b8"  class="fb">User:</span> "Who approved
             <em>it</em>?"<br />
-            <span style="color: #f59e0b">Rewritten Query:</span> "Who approved
+            <span style="color: #f59e0b"  class="fb">Rewritten Query:</span> "Who approved
             the Q3 Risk Report?"<br />
             <em
               >(This rewritten query is sent to FAISS, ensuring we find the
@@ -706,7 +746,7 @@
           Database and SQL engine never have to guess. They always receive
           complete, standalone instructions.
         </p>
-        <div class="slide-number">19 / 28</div>
+        <div class="slide-number">19  / 28</div>
       </div>
 
       <!-- 20. INDEX MANAGER (MOVED FROM 19) -->
@@ -734,7 +774,7 @@
             we re-process. Otherwise, we skip to save resources.
           </li>
         </ul>
-        <div class="slide-number">20 / 28</div>
+        <div class="slide-number">20  / 28</div>
       </div>
 
       <!-- 21. RESPONSE TRANSPARENCY (MOVED FROM 20) -->
@@ -758,7 +798,7 @@
             ⏱️ <strong>Time:</strong> 1.2s
           </p>
         </div>
-        <div class="slide-number">21 / 28</div>
+        <div class="slide-number">21  / 28</div>
       </div>
 
       <!-- 22. SECURITY (MOVED FROM 21) -->
@@ -770,6 +810,9 @@
           <li>
             <strong>Namespace Execution:</strong> Python runs in a restricted
             scope. No access to globals/OS.
+          </li>
+          <li>
+            <strong>Defensive prompt engineering:</strong> Instruct LLM to redirect to BREACH_INTENT in case user tries to use malicious prompts.
           </li>
           <li>
             <strong>Restricted Python Built-ins:</strong> `os.system`,
@@ -786,7 +829,7 @@
             </ul>
           </li>
         </ul>
-        <div class="slide-number">22 / 28</div>
+        <div class="slide-number">22  / 28</div>
       </div>
 
       <!-- 23. BENEFITS (MOVED FROM 22) -->
@@ -796,10 +839,11 @@
 
         <div
           style="
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+            display: flex;
+            flex-direction:column;
             gap: 10px;
             font-size: 0.9rem;
+            font-size: 20px;
           "
         >
           <div
@@ -843,12 +887,13 @@
             rewritten and code executed.
           </div>
         </div>
-        <div class="slide-number">23 / 28</div>
+        <div class="slide-number">23  / 28</div>
       </div>
 
 
        <!-- 24. Sources -->
        <div class="slide">
+        <pre style="color: red;">Note: Skip </pre>
         <h2>10.Sources</h2>
         <ul style="font-size: 1.5rem; line-height: 2">
           <li>Simple Rag Implementation: <a href="https://huggingface.co/blog/ngxson/make-your-own-rag">Link</a></li>
@@ -857,13 +902,14 @@
           <li>Tokens vs embeddings: <a href="https://geoffrey-geofe.medium.com/tokenization-vs-embedding-understanding-the-differences-and-their-importance-in-nlp-b62718b5964a">Link</a></li>
           <li>Faiss Database: <a href="https://faiss.ai/index.html">Faiss Documentation</a></li>
         </ul>
-        <div class="slide-number">24 / 28</div>
+        <div class="slide-number">24  / 28</div>
       </div>
 
 
 
-       <!-- 2. In case you want to learn more -->
+       <!-- 25. In case you want to learn more -->
        <div class="slide">
+        <pre style="color: red;">Note: Skip</pre>
         <h2>11. Useful learning materials</h2>
         <ul style="font-size: 1.5rem; line-height: 2">
           <li>Generative Ai for beginners: <a href="https://phipartners.udemy.com/course/generative-ai-for-beginners-b/learn/lecture/40913810?start=0">Link</a></li>
@@ -882,7 +928,7 @@
         <strong>Quick Note:</strong><br />
         Tool calling can be done without using a library, you can tell llm what functions you have and what params and to give you a json which you parse and treat accordingly, so it's nothing magical, but it's a more standardized way of doing things.
       </div>
-        <div class="slide-number">25 / 28</div>
+        <div class="slide-number">25  / 28</div>
       </div>
 
 
@@ -902,7 +948,7 @@
           <h1>Q & A</h1>
           <h3>Thank you for listening.</h3>
         </div>
-        <div class="slide-number">26 / 28</div>
+        <div class="slide-number">26  / 28</div>
       </div>
 
       <!-- 25. END PAGE -->
@@ -919,7 +965,7 @@
         >
           <h2>End of Presentation</h2>
         </div>
-        <div class="slide-number">27 / 28</div>
+        <div class="slide-number">27  / 28</div>
       </div>
 
       <!-- 28. EMPTY BUFFER SLIDE -->
@@ -934,7 +980,7 @@
         >
           <h2>Thank You</h2>
         </div>
-        <div class="slide-number">28 / 28</div>
+        <div class="slide-number">28  / 28</div>
       </div>
     </div>
 

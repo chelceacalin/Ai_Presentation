@@ -392,9 +392,14 @@ button.control-btn:hover {
     padding: 8px 20px;
     width: 100%;
   }
-  #live-logic-trace {
-    flex-direction: column;
-  }
+}
+
+.fb{
+  font-size: 16px;
+}
+
+#live-logic-trace {
+  flex-direction: column;
 }
 #memory-rewriting-examples {
   overflow-y: auto;
